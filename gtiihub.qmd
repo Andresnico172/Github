@@ -1,0 +1,249 @@
+# Guía Técnica: Gestión de Versiones y Entornos Python con `uv` y GitHub
+
+Este documento detalla los procedimientos estándar para el control de versiones en proyectos de ingeniería de software. 
+
+
+
+El objetivo principal consiste en la inicialización de un proyecto en Python utilizando **`uv`**, un gestor de entornos y dependencias de alto rendimiento. Posteriormente, se establece la arquitectura necesaria para alojar, versionar y sincronizar dicho código fuente de manera segura en un repositorio remoto mediante la plataforma **GitHub**.
+
+---
+
+## 🛠️ Requisitos Previos
+
+Para la correcta ejecución de los procedimientos descritos, el sistema debe contar con los siguientes elementos:
+
+1. **Cuenta de GitHub:** Activa y accesible (github.com).
+2. **Git:** Instalado y configurado en el entorno local.
+3. **`uv`:** Instalado en el sistema como gestor de proyectos Python.
+
+---
+
+## 💻 Paso 1: Inicialización del entorno local
+
+Desde la terminal de comandos del sistema operativo, se deben ejecutar las siguientes instrucciones para generar la estructura base:
+
+1. **Crear el proyecto:**
+   ```bash
+   uv init nombre-del-proyecto
+   ```
+
+2. **Acceder al directorio del proyecto:**
+   ```bash
+   cd nombre-del-proyecto
+   ```
+
+> **💡 Nota Técnica:** La ejecución del comando `uv init` no solo genera los archivos base de Python (`pyproject.toml`, etc.), sino que **inicializa automáticamente un repositorio Git** local y genera un archivo `.gitignore` preconfigurado, optimizando el tiempo de despliegue inicial.
+
+---
+
+## 📦 Paso 2: Registro del estado del proyecto (Commit)
+
+En la arquitectura de Git, un *commit* representa una captura de estado inmutable de un repositorio en un instante preciso. No es equivalente a un guardado tradicional; al realizar un commit, Git genera un punto permanente en el historial del proyecto que contiene:
+
+1. Una instantánea exacta de los archivos en ese momento.
+2. Un identificador criptográfico único (hash SHA-1) para garantizar la integridad.
+3. Metadatos de autoría y fecha.
+4. Un mensaje descriptivo que documenta el propósito de la modificación.
+
+
+
+Para consolidar el primer commit formal, el proceso se divide en dos fases:
+
+1. **Añadir al Área de Preparación (Staging Area):** Se seleccionan explícitamente los archivos que conformarán la captura. El uso del punto (`.`) indica la inclusión de la totalidad del directorio actual.
+   ```bash
+   git add .
+   ```
+
+2. **Consolidar la captura (Commit):** Se sellan los archivos preparados y se inscriben definitivamente en el historial de versiones. El parámetro `-m` es obligatorio para adjuntar la descripción técnica.
+   ```bash
+   git commit -m "Inicialización de la arquitectura del proyecto con uv"
+   ```
+
+---
+
+## 🌐 Paso 3: Creación del repositorio remoto en GitHub
+
+Para establecer el entorno de alojamiento en la nube, es necesario seguir estos pasos en la interfaz web:
+
+1. Acceder a [GitHub.com](https://github.com/) e iniciar sesión.
+2. Navegar a la creación de un nuevo repositorio (**"+"** > **"New repository"**).
+3. Definir el **"Repository name"** (ej. `nombre-del-proyecto`).
+4. **⚠️ Atención:** Asegurarse de mantener **desmarcadas** las opciones "Add a README file" y "Add .gitignore". El repositorio remoto debe inicializarse completamente vacío para evitar conflictos con los archivos locales ya generados.
+5. Seleccionar **"Create repository"**.
+
+---
+
+## 🚀 Paso 4: Vinculación y subida del proyecto (Push)
+
+Desde la terminal local, dentro del directorio del proyecto, se deben ejecutar las siguientes instrucciones para conectar el entorno local con el remoto:
+
+1. **Renombrar la rama principal a "main"** (estándar actual de la industria):
+   ```bash
+   git branch -M main
+   ```
+
+2. **Vincular el repositorio local con GitHub:** *(Sustituir `TU_USUARIO` por el nombre de usuario correspondiente)*.
+   ```bash
+   git remote add origin [https://github.com/TU_USUARIO/nombre-del-proyecto.git](https://github.com/TU_USUARIO/nombre-del-proyecto.git)
+   ```
+
+3. **Subir los archivos:**
+   ```bash
+   git push -u origin main
+   ```
+
+---
+
+## 🔄 Flujo de Trabajo Operativo (Ciclo Diario)
+
+Una vez completada la configuración inicial, el ciclo de vida estándar de desarrollo queda establecido en los siguientes cuatro comandos fundamentales. 
+
+
+
+Es imperativo seguir este orden para evitar conflictos de sincronización:
+
+```bash
+# 1. ACTUALIZAR: Descargar y fusionar los últimos cambios del repositorio remoto.
+git pull
+
+# (Fase de desarrollo: modificación de código, resolución de errores, etc.)
+
+# 2. PREPARAR: Mover los archivos modificados al Staging Area.
+git add .
+
+# 3. CONSOLIDAR: Registrar la captura con un mensaje descriptivo.
+git commit -m "Descripción técnica y concisa de la actualización"
+
+# 4. SUBIR: Enviar los nuevos commits al repositorio remoto en GitHub.
+git push
+```
+
+---
+
+## 🔬 Profundización: Gestión avanzada del Área de Preparación
+
+En entornos profesionales, rara vez es recomendable incluir la totalidad de los archivos modificados en un único commit mediante `git add .`. Las buenas prácticas de ingeniería de software dictan que cada commit debe representar un **cambio atómico y lógico**.
+
+
+
+A continuación, se detallan técnicas de selección más granulares:
+
+* **Añadir un archivo específico:**
+
+    ```bash
+    git add main.py
+    ```
+
+* **Añadir múltiples archivos selectivamente:**
+
+    ```bash
+    git add main.py utils.py README.md
+    ```
+
+* **Añadir mediante patrones de extensión (Comodines):**
+
+    ```bash
+    git add *.py
+    ```
+
+* **Añadir un directorio específico:**
+
+    ```bash
+    git add src/
+    ```
+
+* **Añadir fragmentos de código (Modo Interactivo / Patch):** Esta técnica itera sobre las modificaciones presentándolas en fragmentos (hunks), solicitando confirmación explícita para incluir o descartar cada bloque.
+
+    ```bash
+    git add -p
+    ```
+
+---
+
+## 🧰 Anexo A: Herramientas de Diagnóstico y Control
+
+Para auditar, inspeccionar y corregir el estado del repositorio local, se emplean los siguientes comandos de diagnóstico:
+
+### 1. Inspección del Historial (`git log`)
+Permite revisar la trazabilidad y el historial cronológico completo de commits. Muestra el autor, fecha, hash criptográfico y mensaje.
+
+
+
+```bash
+git log
+# Variación recomendada para un formato condensado:
+git log --oneline
+```
+*(Para salir de la vista de lectura en la terminal, presionar la tecla `q`).*
+
+### 2. Auditoría de Código (`git diff`)
+Compara el directorio de trabajo actual con el último commit registrado, permitiendo verificar exactamente qué líneas de código han sido modificadas antes de preparar los archivos.
+
+
+
+```bash
+git diff
+```
+
+### 3. Reversión del Área de Preparación (`git restore --staged`)
+Permite extraer un archivo específico del Staging Area en caso de haber sido añadido por error, **sin alterar** las modificaciones realizadas en el código fuente.
+
+```bash
+git restore --staged nombre_del_archivo.py
+```
+
+### 4. Gestión Ágil de Dependencias con `uv`
+Para administrar paquetes externos de Python de manera segura, se utilizan los siguientes comandos integrados en el gestor `uv`, los cuales actualizan automáticamente los archivos `pyproject.toml` y `uv.lock`.
+
+```bash
+# Instalación y registro de una dependencia:
+uv add nombre_del_paquete
+
+# Desinstalación y limpieza del entorno:
+uv remove nombre_del_paquete
+```
+
+---
+
+## 🔀 Anexo B: Trabajo Paralelo y Colaboración (Ramas y Forks)
+
+Para el desarrollo colaborativo seguro y la contribución a proyectos de terceros, se emplean dos estructuras fundamentales de aislamiento.
+
+### 1. Ramas (Branches)
+Una rama es una línea de desarrollo paralela dentro de un mismo repositorio. Permite desarrollar nuevas funcionalidades o corregir errores sin comprometer la estabilidad de la rama principal (`main`).
+
+
+
+**Flujo de trabajo estándar con ramas:**
+```bash
+# Crear y cambiar a una nueva rama simultáneamente:
+git switch -c nombre-de-la-rama
+
+# Verificar la rama activa actual:
+git branch
+
+# Subir la nueva rama al repositorio remoto (primer push):
+git push -u origin nombre-de-la-rama
+
+# Fusionar los cambios en la rama principal (tras finalizar el trabajo):
+git switch main
+git merge nombre-de-la-rama
+```
+
+### 2. Bifurcaciones (Forks)
+Un Fork es una funcionalidad específica de plataformas como GitHub (no de Git local) que crea una copia exacta e independiente del repositorio de un tercero en la cuenta propia del usuario. Se utiliza para proponer cambios en proyectos donde no se disponen de permisos de escritura (flujo Open Source).
+
+
+
+**Flujo de contribución mediante Forks:**
+
+1. Generar el Fork desde la interfaz web de GitHub del proyecto original.
+
+2. Clonar el repositorio bifurcado al entorno local:
+   ```bash
+   git clone [https://github.com/TU_USUARIO/proyecto-forkeado.git](https://github.com/TU_USUARIO/proyecto-forkeado.git)
+   ```
+
+3. Desarrollar, consolidar (commits) y subir los cambios (push) al Fork propio.
+
+4. Abrir un **Pull Request (PR)** desde GitHub para solicitar al autor original la integración del código modificado en el repositorio oficial.
